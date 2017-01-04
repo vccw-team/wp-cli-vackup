@@ -7,7 +7,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 require_once( dirname( __FILE__ ) . "/lib/functions.php" );
 
 /**
- * Manage archives for the Shifter.
+ * Cli based backup solution for WordPress
  *
  * @subpackage commands/community
  * @maintainer VCCW Team
@@ -45,8 +45,8 @@ class WP_CLI_Vackup extends WP_CLI_Command
 	 *
 	 * ## EXAMPLES
 	 *
-	 *   $ wp vackup extract /path/to/archive.zip
-	 *   Success: Extracted from '/path/to/archive.zip'.
+	 *   $ wp vackup extract path/to/example.com-20170101022305.zip
+	 *   Success: Extracted from 'path/to/example.com-20170101022305.zip'.
 	 *
 	 * @subcommand extract
 	 */
