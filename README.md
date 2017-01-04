@@ -43,6 +43,8 @@ vackup:
   dir: /Users/miyauchi/Desktop/backups
 ```
 
+See more about configuration: http://wp-cli.org/config/
+
 ## Subcommands
 
 * `wp vackup create`: Create a .zip archive from WordPress. It contains files and database.
