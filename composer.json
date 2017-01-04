@@ -1,0 +1,24 @@
+{
+    "name": "vccw/vackup",
+    "description": "Backup WordPress",
+    "type": "wp-cli-package",
+    "homepage": "https://github.com/vccw-team/wp-cli-vackup",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "VCCW Team",
+            "homepage": "http://vccw.cc/"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "cli.php"
+        ]
+    },
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "behat/behat": "~2.5"
+    }
+}

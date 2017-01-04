@@ -1,0 +1,8 @@
+behat.phar
+composer.phar
+/vendor
+.DS_Store
+installer
+npm-debug.log
+/.envrc
+/.idea
