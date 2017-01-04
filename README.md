@@ -21,6 +21,20 @@ $ wp @all vackup create --dir=backups/
 $ wp package install vccw/vackup:@stable
 ```
 
+### Manual Install
+
+```bash
+$ mkdir -p ~/.wp-cli/commands && cd -
+$ git clone git@github.com:vccw-team/wp-cli-vackup.git
+```
+
+Add following into your `~/.wp-cli/config.yml`.
+
+```yaml
+require:
+  - commands/wp-cli-vackup/cli.php
+```
+
 ## Subcommands
 
 * `wp vackup create`: Create a .zip archive from WordPress. It contains files and database.
@@ -31,7 +45,7 @@ $ wp package install vccw/vackup:@stable
 The file name of the archive will be generated from `home_url()` and timestamp.
 
 ```bash
-$ wp vackup archive create --dir=path/to/dir
+$ wp vackup vackup create --dir=path/to/dir
 ```
 
 Then archive should be `path/to/dir/example.com-20170101000000.zip`.
@@ -39,26 +53,16 @@ Then archive should be `path/to/dir/example.com-20170101000000.zip`.
 You can use it with alias of the WP-CLI.
 
 ```
-$ wp @all archive create --dir=backups/
+$ wp @all vackup create --dir=backups/
 ```
 
 ### Extract from backup.
 
 ```bash
-$ wp vackup archive extract <file> [--delete] [--exclude=<files>]
+$ wp vackup archive extract <file>
 ```
 
-If you add `--delete` option, this command will remove all files before extracting.
-
-```bash
-$ wp vackup archive extract /path/to/archive.zip --delete
-```
-
-You can exclude specific files from archive.
-
-```bash
-$ wp vackup archive extract /path/to/archive.zip --exclude=wp-config.php
-```
+You sometimes need `wp search-replace`.
 
 ### Help
 
@@ -81,20 +85,6 @@ SUBCOMMANDS
 
   create       Create a .zip archive from your WordPress.
   extract      Extract the WordPress site from a .zip archive.
-```
-
-## Installing manually
-
-```bash
-$ mkdir -p ~/.wp-cli/commands && cd -
-$ git clone git@github.com:vccw-team/wp-cli-vackup.git
-```
-
-Add following into your `~/.wp-cli/config.yml`.
-
-```yaml
-require:
-  - commands/wp-cli-vackup/cli.php
 ```
 
 ## Upgrade
