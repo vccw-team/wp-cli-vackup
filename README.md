@@ -17,12 +17,6 @@ $ wp @all vackup create
 ## Getting Started
 
 ```bash
-$ wp package install vccw/vackup:@stable
-```
-
-### Manual Install
-
-```bash
 $ mkdir -p ~/.wp-cli/commands && cd -
 $ git clone git@github.com:vccw-team/wp-cli-vackup.git
 ```
