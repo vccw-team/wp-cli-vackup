@@ -34,6 +34,15 @@ require:
   - commands/wp-cli-vackup/cli.php
 ```
 
+## Configuration
+
+You can configure the default directory to store backups.
+
+```
+vackup:
+  dir: /Users/miyauchi/Desktop/backups
+```
+
 ## Subcommands
 
 * `wp vackup create`: Create a .zip archive from WordPress. It contains files and database.
@@ -48,27 +57,6 @@ $ wp vackup vackup create --dir=path/to/dir
 ```
 
 Then archive should be `path/to/dir/example.com-20170101000000.zip`.
-
-### Create backups with SSH aliases
-
-If you want to create backups on the remote server with SSH alias.
-
-Please configure like following in the `~/.wp-cli/config` in remote servers.
-
-```
-vackup:
-  dir: /Users/miyauchi/Desktop/backups
-```
-
-Also you have to configure aliases in your machine.
-
-http://wp-cli.org/commands/cli/alias/
-
-Then you can run like following.
-
-```
-$ wp @all vackup create
-```
 
 ### Extract from backup.
 

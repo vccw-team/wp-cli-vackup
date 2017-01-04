@@ -32,14 +32,24 @@ class Vackup_Functions
 		$filename = preg_replace( "#[^A-Za-z0-9-_\.\-]#", "-", $filename );
 		$filename = $filename . '-' . date( 'YmdHis' ) . '.zip';
 
+		$home = getenv( 'HOME' );
+		if ( !$home ) {
+			// sometime in windows $HOME is not defined
+			$home = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
+		}
+		$home = untrailingslashit( $home );
+
 		if ( empty( $assoc_args['dir'] ) ) {
-			$dir = getcwd();
+			$dir = $home . "/backups";
 			$extra_config = array();
 			if ( ! empty( WP_CLI::get_runner()->extra_config['vackup'] ) ) {
 				$extra_config = WP_CLI::get_runner()->extra_config['vackup'];
 				if ( ! empty( $extra_config['dir'] ) ) {
 					$dir = $extra_config['dir'];
 				}
+			}
+			if ( ! is_dir( $dir ) ) {
+				mkdir( $dir, 0755 );
 			}
 			$archive = untrailingslashit( $dir ) . "/" . $filename;
 		} else {
@@ -48,7 +58,7 @@ class Vackup_Functions
 				// sometime in windows $HOME is not defined
 				$home = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
 			}
-			$dir = preg_replace( "#~#", untrailingslashit( $home ), $assoc_args['dir'] );
+			$dir = preg_replace( "#~#", $home, $assoc_args['dir'] );
 			$archive = untrailingslashit( $dir ) . "/" . $filename;
 		}
 
