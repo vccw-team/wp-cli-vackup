@@ -33,7 +33,15 @@ class Vackup_Functions
 		$filename = $filename . '-' . date( 'YmdHis' ) . '.zip';
 
 		if ( empty( $assoc_args['dir'] ) ) {
-			$archive = untrailingslashit( getcwd() ) . "/" . $filename;
+			$dir = getcwd();
+			$extra_config = array();
+			if ( ! empty( WP_CLI::get_runner()->extra_config['vackup'] ) ) {
+				$extra_config = WP_CLI::get_runner()->extra_config['vackup'];
+				if ( ! empty( $extra_config['dir'] ) ) {
+					$dir = $extra_config['dir'];
+				}
+			}
+			$archive = untrailingslashit( $dir ) . "/" . $filename;
 		} else {
 			$home = getenv( 'HOME' );
 			if ( !$home ) {

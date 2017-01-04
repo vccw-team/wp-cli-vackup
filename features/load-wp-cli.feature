@@ -43,6 +43,47 @@ Feature: Test that `wp vackup` commands loads.
       """
     And the {ARCHIVE_FILE} file should exist
 
+  Scenario: Tests for the `wp vackup create` with extra config.
+    Given a WP install
+    And I run `mkdir -p /tmp/backups`
+    And a wp-cli.yml file:
+      """
+      vackup:
+        dir: /tmp/backups
+      """
+
+    When I run `wp vackup create`
+    Then save path to the archive as {ARCHIVE_FILE}
+    And STDOUT should contain:
+      """
+      Success: Archived to
+      """
+    And STDOUT should contain:
+      """
+      /tmp/backups
+      """
+    And STDOUT should contain:
+      """
+      example.com
+      """
+    And the {ARCHIVE_FILE} file should exist
+
+    When I run `wp vackup create --dir=/tmp`
+    Then save path to the archive as {ARCHIVE_FILE}
+    And STDOUT should contain:
+      """
+      Success: Archived to
+      """
+    And STDOUT should not contain:
+      """
+      /tmp/backups
+      """
+    And STDOUT should contain:
+      """
+      example.com
+      """
+    And the {ARCHIVE_FILE} file should exist
+
   Scenario: Tests for the `wp vackup extract`
     Given a WP install
     And a wp-content/plugins/example.php file:

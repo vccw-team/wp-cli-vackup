@@ -7,9 +7,8 @@ This is a WP-CLI based backup solution for WordPress.
 This command is friendly with aliases of the WP-CLI like following.
 
 ```
-$ wp @all vackup create --dir=backups/
+$ wp @all vackup create
 ```
-
 
 ## Requires
 
@@ -50,16 +49,31 @@ $ wp vackup vackup create --dir=path/to/dir
 
 Then archive should be `path/to/dir/example.com-20170101000000.zip`.
 
-You can use it with alias of the WP-CLI.
+### Create backups with SSH aliases
+
+If you want to create backups on the remote server with SSH alias.
+
+Please configure like following in the `~/.wp-cli/config` in remote servers.
 
 ```
-$ wp @all vackup create --dir=backups/
+vackup:
+  dir: /Users/miyauchi/Desktop/backups
+```
+
+Also you have to configure aliases in your machine.
+
+http://wp-cli.org/commands/cli/alias/
+
+Then you can run like following.
+
+```
+$ wp @all vackup create
 ```
 
 ### Extract from backup.
 
 ```bash
-$ wp vackup archive extract <file>
+$ wp vackup extract <file>
 ```
 
 You sometimes need `wp search-replace`.
