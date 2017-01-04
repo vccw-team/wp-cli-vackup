@@ -7,7 +7,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 require_once( dirname( __FILE__ ) . "/lib/functions.php" );
 
 /**
- * Cli based backup solution for WordPress
+ * CLI based backup solution for WordPress
  *
  * @subpackage commands/community
  * @maintainer VCCW Team
