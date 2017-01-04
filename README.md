@@ -75,7 +75,7 @@ NAME
 
 DESCRIPTION
 
-  Manage archives for the Shifter.
+  CLI based backup solution for WordPress
 
 SYNOPSIS
 
