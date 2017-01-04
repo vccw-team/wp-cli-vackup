@@ -20,9 +20,13 @@ class WP_CLI_Vackup extends WP_CLI_Command
 	 * ## OPTIONS
 	 *
 	 * [--dir=<path>]
-	 * : Path to the directory that you want to save archives.
+	 * : Path to the directory that you want to store archives.
+	 * * The default value is `~/backups`
 	 *
 	 * ## EXAMPLES
+	 *
+	 *   $ wp vackup create
+	 *   Success: Archived to '/home/user/backups/example.com-20170101022305.zip'.
 	 *
 	 *   $ wp vackup create --dir=path/to
 	 *   Success: Archived to 'path/to/example.com-20170101022305.zip'.

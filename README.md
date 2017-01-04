@@ -40,7 +40,7 @@ You can configure the default directory to store backups.
 
 ```
 vackup:
-  dir: /Users/miyauchi/Desktop/backups
+  dir: /Users/miya0001/backups
 ```
 
 See more about configuration: http://wp-cli.org/config/
@@ -55,7 +55,7 @@ See more about configuration: http://wp-cli.org/config/
 The file name of the archive will be generated from `home_url()` and timestamp.
 
 ```bash
-$ wp vackup vackup create --dir=path/to/dir
+$ wp vackup create --dir=path/to/dir
 ```
 
 Then archive should be `path/to/dir/example.com-20170101000000.zip`.
