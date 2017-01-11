@@ -1,9 +1,11 @@
 <?php
 
-class Vackup_Functions_Test extends WP_UnitTestCase
+use Vackup\Functions;
+
+class Functions_Test extends \WP_UnitTestCase
 {
 	/**
-	 * Tests for the `Vackup_Functions::rempty()`.
+	 * Tests for the `Functions::rempty()`.
 	 *
 	 * @test
 	 * @since 0.1.0
@@ -11,38 +13,38 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 	public function rempty()
 	{
 		$dir = self::mockdir();
-		$files = Vackup_Functions::get_files( $dir );
+		$files = Functions::get_files( $dir );
 		$this->assertSame( 7, iterator_count($files) );
 
 		$dir = self::mockdir();
-		Vackup_Functions::rempty( $dir );
-		$files = Vackup_Functions::get_files( $dir );
+		Functions::rempty( $dir );
+		$files = Functions::get_files( $dir );
 		$this->assertSame( 0, iterator_count($files) );
 
 		$dir = self::mockdir();
 
-		Vackup_Functions::rempty( $dir, array(
+		Functions::rempty( $dir, array(
 			"dir02/dir02-01.txt",
 			"dir01/dir01-01/dir01-01-01.txt"
 		) );
-		$files = Vackup_Functions::get_files( $dir );
+		$files = Functions::get_files( $dir );
 		$this->assertSame( 5, iterator_count($files) );
 	}
 
 	/**
-	 * Tests for the `Vackup_Functions::tempdir()`.
+	 * Tests for the `Functions::tempdir()`.
 	 *
 	 * @test
 	 * @since 0.1.0
 	 */
 	public function tempdir()
 	{
-		$dir = Vackup_Functions::tempdir();
+		$dir = Functions::tempdir();
 		$this->assertTrue( is_dir( $dir ) ); // $dir should exists.
 	}
 
 	/**
-	 * Tests for the `Vackup_Functions::rrmdir()`.
+	 * Tests for the `Functions::rrmdir()`.
 	 *
 	 * @test
 	 * @since 0.1.0
@@ -52,12 +54,12 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 		$dir = self::mockdir();
 		$this->assertTrue( is_dir( $dir ) ); // $dir should exists.
 
-		Vackup_Functions::rrmdir( $dir );
+		Functions::rrmdir( $dir );
 		$this->assertFalse( is_dir( $dir ) ); // $dir should not exists.
 	}
 
 	/**
-	 * Tests for the `Vackup_Functions::rcopy()`.
+	 * Tests for the `Functions::rcopy()`.
 	 *
 	 * @test
 	 * @since 0.1.0
@@ -67,23 +69,23 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 		$src = self::mockdir();
 		$this->assertTrue( is_dir( $src ) ); // $dir should exists.
 
-		$dest = Vackup_Functions::tempdir();
+		$dest = Functions::tempdir();
 		$this->assertTrue( is_dir( $dest ) ); // $dir should exists.
 		$this->assertTrue( self::md5sum( $src ) !== self::md5sum( $dest ) );
 
 		// Copy directory recursively then check md5.
-		Vackup_Functions::rcopy( $src, $dest );
+		Functions::rcopy( $src, $dest );
 		$this->assertTrue( self::md5sum( $src ) === self::md5sum( $dest ) );
 
-		$dest = Vackup_Functions::tempdir();
-		Vackup_Functions::rcopy( $src, $dest, array( "dir01/dir01-01.txt" ) );
+		$dest = Functions::tempdir();
+		Functions::rcopy( $src, $dest, array( "dir01/dir01-01.txt" ) );
 		$this->assertFalse( is_file( $dest . '/dir01/dir01-01.txt' ) );
 		$this->assertTrue( is_file( $dest . '/dir01/dir01-02.txt' ) );
 		$this->assertTrue( is_file( $dest . '/dir02/dir02-01.txt' ) );
 	}
 
 	/**
-	 * Tests for the `Vackup_Functions::zip()`.
+	 * Tests for the `Functions::zip()`.
 	 *
 	 * @test
 	 * @since 0.1.0
@@ -93,15 +95,15 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 		$src = self::mockdir();
 		$this->assertTrue( is_dir( $src ) ); // $dir should exists.
 
-		$dir = Vackup_Functions::tempdir();
+		$dir = Functions::tempdir();
 
 		// zip $src
-		Vackup_Functions::zip( $src, $dir . '/archive.zip' );
+		Functions::zip( $src, $dir . '/archive.zip' );
 		$this->assertTrue( is_file( $dir . '/archive.zip' ) );
 
 		// unzip to $dir . "/tmp"
 		mkdir( $dir . "/tmp" );
-		Vackup_Functions::unzip( $dir . '/archive.zip', $dir . "/tmp" );
+		Functions::unzip( $dir . '/archive.zip', $dir . "/tmp" );
 		$this->assertTrue( self::md5sum( $src ) === self::md5sum( $dir . "/tmp" ) );
 	}
 
@@ -113,7 +115,7 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 	 */
 	public static function mockdir()
 	{
-		$dir = Vackup_Functions::tempdir();
+		$dir = Functions::tempdir();
 		mkdir( $dir . "/dir01" );
 		file_put_contents( $dir . "/dir01/dir01-01.txt", time() );
 		file_put_contents( $dir . "/dir01/dir01-02.txt", time() );
@@ -138,7 +140,7 @@ class Vackup_Functions_Test extends WP_UnitTestCase
 			return false;
 		}
 
-		$iterator = Vackup_Functions::get_files( $dir );
+		$iterator = Functions::get_files( $dir );
 
 		$md5 = array();
 		foreach ( $iterator as $item ) {

@@ -1,7 +1,39 @@
 <?php
 
-class Vackup_Functions
+namespace Vackup;
+
+use WP_CLI;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use ZipArchive;
+
+class Functions
 {
+	public static function create_manifest()
+	{
+		$manifest = array(
+			'wp_version' => $GLOBALS['wp_version'],
+			'home_url' => home_url(),
+			'site_url' => site_url(),
+			'db_prefix' => $GLOBALS['wpdb']->prefix,
+			'plugins' => wp_get_active_and_valid_plugins(),
+			'theme' => wp_get_theme()->get( 'Name' ),
+			'admin_email' => get_option( 'admin_email' ),
+			'charset' => get_bloginfo( 'charset' ),
+			'language' => get_bloginfo( 'language' ),
+			'abspath' => ABSPATH,
+			'uploads' => wp_upload_dir( null, false, true ),
+			'content_dir' => WP_CONTENT_DIR,
+			'content_url' => WP_CONTENT_URL,
+			'plugin_dir' => WP_PLUGIN_DIR,
+			'plugin_url' => WP_PLUGIN_URL,
+			'theme_dir' => get_theme_root(),
+			'theme_url' => get_theme_root_uri(),
+		);
+
+		return json_encode( $manifest, JSON_PRETTY_PRINT );
+	}
+
 	/**
 	 * Create an archive.
 	 *
@@ -11,13 +43,10 @@ class Vackup_Functions
 	 */
 	public static function create_archive( $args, $assoc_args )
 	{
-		$excludes = array(
-			'wp-config.php',
-			'wp-config-sample.php',
-		);
-
-		$tmp_dir = self::tempdir( 'VAK' );
-		self::rcopy( ABSPATH, $tmp_dir . '/wordpress', $excludes );
+		$tmp_dir = untrailingslashit( self::tempdir( 'VAK' ) );
+		$src = untrailingslashit( WP_CONTENT_DIR );
+		$dest = untrailingslashit( str_replace( home_url(), '', WP_CONTENT_URL ) );
+		self::rcopy( $src, $tmp_dir . '/wordpress/' . $dest );
 
 		WP_CLI::launch_self(
 			"db export",
@@ -27,6 +56,8 @@ class Vackup_Functions
 			true,
 			array( 'path' => WP_CLI::get_runner()->config['path'] )
 		);
+
+		file_put_contents( $tmp_dir . '/manifest.json', self::create_manifest() );
 
 		$filename = preg_replace( "#^https?://#", "", home_url() );
 		$filename = preg_replace( "#[^A-Za-z0-9-_\.\-]#", "-", $filename );
@@ -148,7 +179,7 @@ class Vackup_Functions
 		$dest = untrailingslashit( $dest );
 
 		if ( ! is_dir( $dest ) ) {
-			mkdir( $dest, 0755 );
+			mkdir( $dest, 0755, true );
 		}
 
 		$iterator = self::get_files( $src );
