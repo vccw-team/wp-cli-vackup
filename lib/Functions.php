@@ -2,13 +2,55 @@
 
 namespace Vackup;
 
-use WP_CLI;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use ZipArchive;
 
 class Functions
 {
+	public static function get_archive_file_name()
+	{
+		$filename = preg_replace( "#^https?://#", "", home_url() );
+		$filename = preg_replace( "#[^A-Za-z0-9-_\.\-]#", "-", $filename );
+
+		return $filename . '-' . date( 'YmdHis' ) . '.zip';
+	}
+
+	public static function get_archive_path( $assoc_args, $extra_config )
+	{
+		$home = Functions::get_home_dir();
+
+		if ( empty( $assoc_args['dir'] ) ) {
+			$dir = $home . "/backups";
+			if ( ! empty( $extra_config['vackup'] ) ) {
+				$vackup_config = $extra_config['vackup'];
+				if ( ! empty( $vackup_config['dir'] ) ) {
+					$dir = $vackup_config['dir'];
+				}
+			}
+			if ( ! is_dir( $dir ) ) {
+				mkdir( $dir, 0755 );
+			}
+			$archive = untrailingslashit( $dir );
+		} else {
+			$dir = preg_replace( "#~#", $home, $assoc_args['dir'] );
+			$archive = untrailingslashit( $dir );
+		}
+
+		return $archive;
+	}
+
+	public static function get_home_dir()
+	{
+		$home = getenv( 'HOME' );
+		if ( !$home ) {
+			// sometime in windows $HOME is not defined
+			$home = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
+		}
+
+		return untrailingslashit( $home );
+	}
+
 	public static function create_manifest()
 	{
 		$manifest = array(
@@ -41,64 +83,13 @@ class Functions
 	 * @param  array $assoc_args The `$assoc_args` for the WP-CLI.
 	 * @return string The path to archive.
 	 */
-	public static function create_archive( $args, $assoc_args )
+	public static function create_archive( $archive, $backup_dir )
 	{
-		$tmp_dir = untrailingslashit( self::tempdir( 'VAK' ) );
 		$src = untrailingslashit( WP_CONTENT_DIR );
 		$dest = untrailingslashit( str_replace( home_url(), '', WP_CONTENT_URL ) );
-		self::rcopy( $src, $tmp_dir . '/wordpress/' . $dest );
+		self::rcopy( $src, $backup_dir . '/wordpress/' . $dest );
 
-		WP_CLI::launch_self(
-			"db export",
-			array( $tmp_dir . "/wordpress.sql" ),
-			array(),
-			true,
-			true,
-			array( 'path' => WP_CLI::get_runner()->config['path'] )
-		);
-
-		file_put_contents( $tmp_dir . '/manifest.json', self::create_manifest() );
-
-		$filename = preg_replace( "#^https?://#", "", home_url() );
-		$filename = preg_replace( "#[^A-Za-z0-9-_\.\-]#", "-", $filename );
-		$filename = $filename . '-' . date( 'YmdHis' ) . '.zip';
-
-		$home = getenv( 'HOME' );
-		if ( !$home ) {
-			// sometime in windows $HOME is not defined
-			$home = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
-		}
-		$home = untrailingslashit( $home );
-
-		if ( empty( $assoc_args['dir'] ) ) {
-			$dir = $home . "/backups";
-			$extra_config = array();
-			if ( ! empty( WP_CLI::get_runner()->extra_config['vackup'] ) ) {
-				$extra_config = WP_CLI::get_runner()->extra_config['vackup'];
-				if ( ! empty( $extra_config['dir'] ) ) {
-					$dir = $extra_config['dir'];
-				}
-			}
-			if ( ! is_dir( $dir ) ) {
-				mkdir( $dir, 0755 );
-			}
-			$archive = untrailingslashit( $dir ) . "/" . $filename;
-		} else {
-			$home = getenv( 'HOME' );
-			if ( !$home ) {
-				// sometime in windows $HOME is not defined
-				$home = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
-			}
-			$dir = preg_replace( "#~#", $home, $assoc_args['dir'] );
-			$archive = untrailingslashit( $dir ) . "/" . $filename;
-		}
-
-		$file = self::zip( $tmp_dir, $archive );
-
-		self::rrmdir( $tmp_dir );
-		if ( is_wp_error( $file ) ) {
-			WP_CLI::error( $file->get_error_message() );
-		}
+		$file = self::zip( $backup_dir, $archive );
 
 		return $file;
 	}

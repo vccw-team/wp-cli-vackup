@@ -40,7 +40,34 @@ class CLI extends WP_CLI_Command
 	 */
 	function create( $args, $assoc_args )
 	{
-		$res = Functions::create_archive( $args, $assoc_args );
+		$backup_dir = untrailingslashit( Functions::tempdir( 'VAK' ) );
+
+		WP_CLI::launch_self(
+			"db export",
+			array( $backup_dir . "/wordpress.sql" ),
+			array(),
+			true,
+			true,
+			array( 'path' => WP_CLI::get_runner()->config['path'] )
+		);
+
+		file_put_contents(
+			$backup_dir . '/manifest.json',
+			Functions::create_manifest()
+		);
+
+		$extra_config = WP_CLI::get_runner()->extra_config;
+
+		$archive_dir = Functions::get_archive_path( $assoc_args, $extra_config );
+		$archive = $archive_dir . '/' . Functions::get_archive_file_name();
+
+		$res = Functions::create_archive( $archive, $backup_dir );
+
+		Functions::rrmdir( $backup_dir );
+		if ( is_wp_error( $file ) ) {
+			WP_CLI::error( $file->get_error_message() );
+		}
+
 		WP_CLI::success( sprintf( "Archived to '%s'.", $res ) );
 	}
 
