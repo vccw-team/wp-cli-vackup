@@ -64,8 +64,8 @@ class CLI extends WP_CLI_Command
 		$res = Functions::create_archive( $archive, $backup_dir );
 
 		Functions::rrmdir( $backup_dir );
-		if ( is_wp_error( $file ) ) {
-			WP_CLI::error( $file->get_error_message() );
+		if ( is_wp_error( $res ) ) {
+			WP_CLI::error( $res->get_error_message() );
 		}
 
 		WP_CLI::success( sprintf( "Archived to '%s'.", $res ) );

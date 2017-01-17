@@ -62,11 +62,9 @@ $ wp vackup extract <file>
 
 You sometimes need `wp search-replace`.
 
-### Help
+### Usage
 
 ```bash
-$ wp help vackup
-
 NAME
 
   wp vackup
@@ -82,7 +80,7 @@ SYNOPSIS
 SUBCOMMANDS
 
   create       Create a .zip archive from your WordPress.
-  extract      Extract the WordPress site from a .zip archive.
+  restore      Restore the WordPress site from backup.
 ```
 
 ## Upgrade
