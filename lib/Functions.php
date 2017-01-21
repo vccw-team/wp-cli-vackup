@@ -71,6 +71,7 @@ class Functions
 			'plugin_url' => WP_PLUGIN_URL,
 			'theme_dir' => get_theme_root(),
 			'theme_url' => get_theme_root_uri(),
+			'created' => date( 'c' ),
 		);
 
 		return json_encode( $manifest, JSON_PRETTY_PRINT );
