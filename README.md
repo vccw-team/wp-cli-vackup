@@ -62,6 +62,14 @@ $ wp vackup extract <file>
 
 You sometimes need `wp search-replace`.
 
+### Launch WordPress from backup with PHP built-in server.
+
+```
+$ wp vackup server /path/to/backup.zip
+```
+
+Then visit [http://localhost:8080/](http://localhost:8080/).
+
 ### Usage
 
 ```bash
