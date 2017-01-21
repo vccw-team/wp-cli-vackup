@@ -125,6 +125,110 @@ class CLI extends WP_CLI_Command
 
 		WP_CLI::success( sprintf( "Restored from '%s'.", $args[0] ) );
 	}
+
+	/**
+	 * Launch WordPress from backup file with PHP built-in web server.
+	 *
+	 * ## Options
+	 *
+	 * <file>
+	 * : The path to the backup file.
+	 *
+	 * [--dbuser=<dbuser>]
+	 * : The database user.
+	 *
+	 * [--dbpass=<dbpass>]
+	 * : The database password.
+	 *
+	 * [--dbname=<dbname>]
+	 * : The database name.
+	 *
+	 * [--dbhost=<dbhost>]
+	 * : Set the database host.
+	 * ---
+	 * default: localhost
+	 * ---
+	 *
+	 * @when before_wp_load
+	 */
+	function server( $args, $assoc_args )
+	{
+		if ( ! is_file( $args[0] ) ) {
+			WP_CLI::error( "No such file or directory." );
+		}
+
+		Functions::unzip( $args[0], getcwd() );
+		$json = json_decode( file_get_contents( getcwd() . '/manifest.json' ), true );
+
+		$result = WP_CLI::launch_self(
+			"core download",
+			array(),
+			array(
+				'version' => $json['wp_version'],
+				'path' => getcwd() . '/wordpress'
+			),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		$result = WP_CLI::launch_self(
+			"core config",
+			array(),
+			array(
+				'dbname' => 'wordpress',
+				'dbuser' => 'root'
+			),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		$result = WP_CLI::launch_self(
+			"db create",
+			array(),
+			array(),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		if ( ! empty( $json['locale'] ) ) {
+			$result = WP_CLI::launch_self(
+				"core language install",
+				array( $json['locale'] ),
+				array(),
+				false,
+				true,
+				array( 'path' => getcwd() . '/wordpress' )
+			);
+		}
+
+		$result = WP_CLI::launch_self(
+			"db import",
+			array( getcwd() . '/wordpress.sql' ),
+			array(),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		$result = WP_CLI::launch_self(
+			"search-replace",
+			array( $json['home_url'], "http://localhost:8080" ),
+			array(),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		$result = WP_CLI::run_command(
+			array( "server" ),
+			array(
+				'docroot' => getcwd() . '/wordpress'
+			)
+		);
+	}
 }
 
 WP_CLI::add_command( 'vackup', 'Vackup\CLI' );
