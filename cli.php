@@ -20,7 +20,7 @@ require_once( dirname( __FILE__ ) . "/lib/Functions.php" );
 class CLI extends WP_CLI_Command
 {
 	/**
-	 * Create a .zip archive from your WordPress.
+	 * Create a `.zip` archive from your WordPress.
 	 *
 	 * ## OPTIONS
 	 *

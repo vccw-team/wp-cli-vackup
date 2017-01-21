@@ -79,8 +79,9 @@ SYNOPSIS
 
 SUBCOMMANDS
 
-  create       Create a .zip archive from your WordPress.
+  create       Create a `.zip` archive from your WordPress.
   restore      Restore the WordPress site from backup.
+  server       Launch WordPress from backup file with PHP built-in web server.
 ```
 
 ## Upgrade
