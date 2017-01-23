@@ -157,32 +157,51 @@ class CLI extends WP_CLI_Command
 			WP_CLI::error( "No such file or directory." );
 		}
 
+		$db = Functions::get_db_config( $assoc_args );
+
 		Functions::unzip( $args[0], getcwd() );
-		$json = json_decode( file_get_contents( getcwd() . '/manifest.json' ), true );
+
+		$json = file_get_contents( getcwd() . '/manifest.json' );
+		$manifest = json_decode( $json, true );
 
 		$result = WP_CLI::launch_self(
 			"core download",
 			array(),
 			array(
-				'version' => $json['wp_version'],
-				'path' => getcwd() . '/wordpress'
+				'version' => $manifest['wp_version'],
+				'path' => getcwd() . '/wordpress',
+				'force' => true,
 			),
 			false,
 			true,
 			array( 'path' => getcwd() . '/wordpress' )
 		);
 
+		if ( 0 !== $result->return_code ) {
+			WP_CLI::error( $result->stderr );
+		}
+
 		$result = WP_CLI::launch_self(
 			"core config",
 			array(),
 			array(
-				'dbname' => 'wordpress',
-				'dbuser' => 'root'
+				'dbname' => $db['dbname'],
+				'dbuser' => $db['dbuser'],
+				'dbpass' => $db['dbpass'],
+				'dbhost' => 'localhost',
+				'dbprefix' => $manifest['db_prefix'],
+				'force' => true,
 			),
 			false,
 			true,
 			array( 'path' => getcwd() . '/wordpress' )
 		);
+
+		if ( 0 === $result->return_code ) {
+			rename( getcwd() . '/wordpress/wp-config.php', getcwd() . '/wp-config.php' );
+		} else {
+			WP_CLI::error( $result->stderr );
+		}
 
 		$result = WP_CLI::launch_self(
 			"db create",
@@ -193,15 +212,32 @@ class CLI extends WP_CLI_Command
 			array( 'path' => getcwd() . '/wordpress' )
 		);
 
-		if ( ! empty( $json['locale'] ) ) {
+		$result = WP_CLI::launch_self(
+			"db check",
+			array(),
+			array(),
+			false,
+			true,
+			array( 'path' => getcwd() . '/wordpress' )
+		);
+
+		if ( 0 !== $result->return_code ) {
+			WP_CLI::error( $result->stderr );
+		}
+
+		if ( ! empty( $manifest['locale'] ) ) {
 			$result = WP_CLI::launch_self(
 				"core language install",
-				array( $json['locale'] ),
+				array( $manifest['locale'] ),
 				array(),
 				false,
 				true,
 				array( 'path' => getcwd() . '/wordpress' )
 			);
+		}
+
+		if ( 0 !== $result->return_code ) {
+			WP_CLI::error( $result->stderr );
 		}
 
 		$result = WP_CLI::launch_self(
@@ -213,14 +249,22 @@ class CLI extends WP_CLI_Command
 			array( 'path' => getcwd() . '/wordpress' )
 		);
 
+		if ( 0 !== $result->return_code ) {
+			WP_CLI::error( $result->stderr );
+		}
+
 		$result = WP_CLI::launch_self(
 			"search-replace",
-			array( $json['home_url'], "http://localhost:8080" ),
+			array( $manifest['home_url'], "http://localhost:8080" ),
 			array(),
 			false,
 			true,
 			array( 'path' => getcwd() . '/wordpress' )
 		);
+
+		if ( 0 !== $result->return_code ) {
+			WP_CLI::error( $result->stderr );
+		}
 
 		$result = WP_CLI::run_command(
 			array( "server" ),

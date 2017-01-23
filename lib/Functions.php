@@ -5,9 +5,53 @@ namespace Vackup;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use ZipArchive;
+use WP_CLI;
 
 class Functions
 {
+	/**
+	 * Plompt database user, password and name.
+	 */
+	public static function get_db_config( $assoc_args )
+	{
+		$extra_config = WP_CLI::get_runner()->extra_config;
+
+		if ( ! empty( $assoc_args['dbuser'] ) ) {
+			$dbuser = $assoc_args['dbuser'];
+		} else {
+			$dbuser = trim( \cli\prompt(
+				'MySQL Username',
+				$default = false,
+				$marker = ': ',
+				$hide = false
+			) );
+		}
+
+		if ( isset( $assoc_args['dbpass'] ) ) {
+			$dbpass = $assoc_args['dbpass'];
+		} else {
+			$dbpass = trim( \cli\prompt(
+				'MySQL Password (will be hidden)',
+				$default = "",
+				$marker = ': ',
+				$hide = true
+			) );
+		}
+
+		if ( ! empty( $assoc_args['dbname'] ) ) {
+			$dbname = $assoc_args['dbname'];
+		} else {
+			$dbname = trim( \cli\prompt(
+				'MySQL Database Name',
+				$default = "wordpress",
+				$marker = ': ',
+				$hide = false
+			) );
+		}
+
+		return array( 'dbuser' => $dbuser, 'dbpass' => $dbpass, 'dbname' => $dbname );
+	}
+
 	public static function get_archive_file_name()
 	{
 		$filename = preg_replace( "#^https?://#", "", home_url() );
