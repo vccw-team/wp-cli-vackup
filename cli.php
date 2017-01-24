@@ -181,6 +181,8 @@ class CLI extends WP_CLI_Command
 			WP_CLI::error( $result->stderr );
 		}
 
+		WP_CLI::success( "WordPress {$manifest['wp_version']} downloaded." );
+
 		$result = WP_CLI::launch_self(
 			"core config",
 			array(),
@@ -199,6 +201,7 @@ class CLI extends WP_CLI_Command
 
 		if ( 0 === $result->return_code ) {
 			rename( getcwd() . '/wordpress/wp-config.php', getcwd() . '/wp-config.php' );
+			WP_CLI::success( "Generated 'wp-config.php' file." );
 		} else {
 			WP_CLI::error( $result->stderr );
 		}
@@ -211,6 +214,12 @@ class CLI extends WP_CLI_Command
 			true,
 			array( 'path' => getcwd() . '/wordpress' )
 		);
+
+		if ( 0 === $result->return_code ) {
+			WP_CLI::success( "Database '{$db['dbname']}' created." );
+		} else {
+			WP_CLI::success( "Database '{$db['dbname']}' already exists." );
+		}
 
 		$result = WP_CLI::launch_self(
 			"db check",
@@ -256,7 +265,9 @@ class CLI extends WP_CLI_Command
 		$result = WP_CLI::launch_self(
 			"search-replace",
 			array( $manifest['home_url'], "http://localhost:8080" ),
-			array(),
+			array(
+				'skip-columns' => 'guid',
+			),
 			false,
 			true,
 			array( 'path' => getcwd() . '/wordpress' )
@@ -265,6 +276,8 @@ class CLI extends WP_CLI_Command
 		if ( 0 !== $result->return_code ) {
 			WP_CLI::error( $result->stderr );
 		}
+
+		WP_CLI::success( "Imported database." );
 
 		$result = WP_CLI::run_command(
 			array( "server" ),
