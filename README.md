@@ -42,7 +42,7 @@ See more about configuration: http://wp-cli.org/config/
 ## Subcommands
 
 * `wp vackup create`: Create a .zip archive from WordPress. It contains files and database.
-* `wp vackup extract`: Extract the WordPress site from a .zip archive.
+* `wp vackup restore`: Restore the WordPress site from a .zip archive.
 
 ### Backup your WordPress files and database.
 
@@ -54,10 +54,10 @@ $ wp vackup create --dir=path/to/dir
 
 Then archive should be `path/to/dir/example.com-20170101000000.zip`.
 
-### Extract from backup.
+### Restore from backup.
 
 ```bash
-$ wp vackup extract <file>
+$ wp vackup restore <file>
 ```
 
 You sometimes need `wp search-replace`.
