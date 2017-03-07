@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/vccw-team/wp-cli-vackup.svg?branch=master)](https://travis-ci.org/vccw-team/wp-cli-vackup)
 
-This is a WP-CLI based backup solution for WordPress.
+This is a WP-CLI based backup solution for WordPress. You can create backups of the files and the DB, and restore the sites back from them.
 
-This command is friendly with aliases of the WP-CLI like following.
+With the alias function of the WP CLI, this command helps you to reduce workload on managing multiple sites.
 
 ```
 $ wp @all vackup create
 ```
+
+See more about alias: https://make.wordpress.org/cli/handbook/config/#config-files
 
 ## Requires
 
@@ -37,22 +39,23 @@ vackup:
   dir: /Users/miya0001/backups
 ```
 
-See more about configuration: http://wp-cli.org/config/
+See more about configuration: https://make.wordpress.org/cli/handbook/config/
 
 ## Subcommands
 
 * `wp vackup create`: Create a .zip archive from WordPress. It contains files and database.
 * `wp vackup restore`: Restore the WordPress site from a .zip archive.
+* `wp vackup server`: Launch a temporary WordPress site with PHP built-in web server.
 
 ### Backup your WordPress files and database.
 
-The file name of the archive will be generated from `home_url()` and timestamp.
+The file name of the archive will be generated from `home_url()` and a timestamp.
 
 ```bash
 $ wp vackup create --dir=path/to/dir
 ```
 
-Then archive should be `path/to/dir/example.com-20170101000000.zip`.
+The archive file name will be `path/to/dir/example.com-20170101000000.zip`.
 
 ### Restore from backup.
 
@@ -60,7 +63,7 @@ Then archive should be `path/to/dir/example.com-20170101000000.zip`.
 $ wp vackup restore <file>
 ```
 
-You sometimes need `wp search-replace`.
+You'd sometimes need `wp search-replace`, for example when you create a backup from production and restore it to dev environment.
 
 ### Launch WordPress from backup with PHP built-in server.
 
@@ -87,7 +90,7 @@ SYNOPSIS
 
 SUBCOMMANDS
 
-  create       Create a `.zip` archive from your WordPress.
+  create       Create a `.zip` archive of a WordPress install.
   restore      Restore the WordPress site from backup.
   server       Launch WordPress from backup file with PHP built-in web server.
 ```
