@@ -42,14 +42,7 @@ class CLI extends WP_CLI_Command
 	{
 		$backup_dir = untrailingslashit( Functions::tempdir( 'VAK' ) );
 
-		WP_CLI::launch_self(
-			"db export",
-			array( $backup_dir . "/wordpress.sql" ),
-			array(),
-			true,
-			true,
-			array( 'path' => WP_CLI::get_runner()->config['path'] )
-		);
+		WP_CLI::runcommand( "db export " . $backup_dir . "/wordpress.sql" );
 
 		file_put_contents(
 			$backup_dir . '/manifest.json',
@@ -107,14 +100,7 @@ class CLI extends WP_CLI_Command
 		Functions::rcopy( $tmp_dir . '/wordpress', ABSPATH, array() );
 
 		if ( is_file( $tmp_dir . "/wordpress.sql" ) ) {
-			$result = WP_CLI::launch_self(
-				"db import",
-				array( $tmp_dir . "/wordpress.sql" ),
-				array(),
-				true,
-				true,
-				array( 'path' => WP_CLI::get_runner()->config['path'] )
-			);
+			$result = WP_CLI::runcommand( "db import " . $tmp_dir . "/wordpress.sql" );
 			if ( $result->return_code ) {
 				Functions::rrmdir( $tmp_dir );
 				WP_CLI::error( sprintf( "Can't import database from '%s'.", $args[0] ) );
